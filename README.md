@@ -12,7 +12,7 @@ the image. Example:
 ```
 git clone https://github.com/tsuru/docker-nginx-with-modules.git
 cd docker-nginx-with-modules
-docker build --build-arg modules=https://github.com/vozlt/nginx-module-vts.git,https://github.com/openresty/echo-nginx-module.git .
+docker build --build-arg modules=https://github.com/vozlt/nginx-module-vts.git:v0.1.17,https://github.com/openresty/echo-nginx-module.git .
 ```
 
 ## Flavors
