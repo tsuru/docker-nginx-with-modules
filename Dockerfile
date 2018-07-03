@@ -1,4 +1,4 @@
-FROM nginx:1.15.0 as build
+FROM nginx:1.14.0 as build
 
 RUN apt-get update \
     && apt-get install -y --no-install-suggests \
@@ -22,5 +22,5 @@ RUN export NGINX_RAW_VERSION=$(echo $NGINX_VERSION | sed 's/-.*//g') \
     && mkdir /modules \
     && cp $(pwd)/objs/*.so /modules
 
-FROM nginx:1.15.0
+FROM nginx:1.14.0
 COPY --from=build /modules/* /etc/nginx/modules/
