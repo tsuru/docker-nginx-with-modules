@@ -14,3 +14,15 @@ git clone https://github.com/tsuru/docker-nginx-with-modules.git
 cd docker-nginx-with-modules
 docker build --build-arg modules=https://github.com/vozlt/nginx-module-vts.git,https://github.com/openresty/echo-nginx-module.git .
 ```
+
+## Flavors
+
+Flavors are a way to group a set of modules to generate a custom nginx image.
+Flavors can be added by editing the `flavors.json` file and listing the module
+URLs.
+
+To build a flavor you can use the provided Makefile:
+
+```
+make image flavor=tsuru nginx_version=1.14.0
+```
