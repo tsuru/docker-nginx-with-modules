@@ -1,11 +1,13 @@
 language: bash
 services:
 - docker
-before_script:
-- if [ -n "$DOCKER_USERNAME" ]; the echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin; fi
 script:
 - make image flavor=$FLAVOR nginx_version=$NGINX_VERSION
-- if [ -n "$DOCKER_USERNAME" ]; then docker push tsuru/nginx-$FLAVOR:$NGINX_VERSION; fi
+- |
+  if [ -n "${TRAVIS_TAG}" ] || [ "${TRAVIS_BRANCH}" = "master" ]; then
+    echo "${DOCKER_PASSWORD}" | docker login -u "${DOCKER_USERNAME}" --password-stdin;
+    docker push tsuru/nginx-${FLAVOR}:${NGINX_VERSION};
+  fi
 env:
   global:
   - secure: INyCcvgvdpFFv3r4AxGINYduePHcz99WilzjD+Rv8iUFyJdir8ouG2mcLOp1jn3rosx33bter/Q7G5S8zCoBsm0JY1WcRnuWpOzeb8b1j6v20ghW81+1chMiJGcuCERVJA4z2C/4yJWaf4LqTHXZGGyx6nSMusCKvXzxEBlAidNsRC3piS4eR09Vb4mm3G16t+NGgCmWtuhe+aCaI/bYUU6rAtxQ193xhLCv/m6J0QISPLy+Ev7Yx8erS0FsTyIBKF5m+aXvkZLTKcjwBYKJ4ttarSuXjgzEJkXN8cx30oNnqPbAlqlLH6rF7hbTvVBczvsHbklkYbjvTxIkI90XD+sT1Xj/BUpzuHI3gjuv3RDpR+0IiryRWk23DL8r1eLqVmOvnmKF/p1ItvxZCM1qMK/oMp4MDrM8LfIYf4OkU2hZPTk02Jp62w9oBpt/qNN4kuTv+24/5SugCe5kKoeWzMZEhk67T+tTM2DjZDmIlO3Bu8SSGUlUuh4yLVAD/CxDPYxqUoGeixK9QENw0/SQlUr9R+q3NfJrBQpj0nfniW7c2Igd6yth5RXXs0QWvsnv75fQ8sQWEwV3WiRW9YGOKHAMxY2OgttO2bc9HECXzvSlSDW7IA4z1kpR9B1XumZgQ5tb9Mtca+IC3uZX7LkZLHkkiFmY0Latf/ZkugCidHQ=
