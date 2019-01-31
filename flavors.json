@@ -13,9 +13,10 @@
         "https://github.com/openresty/lua-nginx-module.git",
         "https://github.com/masterzen/nginx-upload-progress-module.git",
         "https://github.com/gnosek/nginx-upstream-fair.git",
-        "https://github.com/vozlt/nginx-module-vts.git",
+        "https://github.com/vozlt/nginx-module-vts.git:v0.1.18",
         "https://github.com/aperezdc/ngx-fancyindex.git",
-        "https://github.com/yaoweibin/ngx_http_substitutions_filter_module.git"
+        "https://github.com/yaoweibin/ngx_http_substitutions_filter_module.git",
+        "https://github.com/openresty/lua-ssl-nginx-module.git:v0.01rc2"
       ]
     },
     {
