@@ -3,6 +3,7 @@ services:
 - docker
 script:
 - make image flavor=$FLAVOR nginx_version=$NGINX_VERSION
+- make test flavor=$FLAVOR nginx_version=$NGINX_VERSION
 - |
   if [ -n "${TRAVIS_TAG}" ] || [ "${TRAVIS_BRANCH}" = "master" ]; then
     echo "${DOCKER_PASSWORD}" | docker login -u "${DOCKER_USERNAME}" --password-stdin;

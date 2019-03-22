@@ -2,6 +2,7 @@ ARG nginx_version=1.14.0
 ARG modsecurity_version=v3.0.3
 
 FROM nginx:${nginx_version} as build
+SHELL ["/bin/bash", "-c"]
 
 RUN apt-get update \
     && apt-get install -y --no-install-suggests \
@@ -27,7 +28,19 @@ RUN export NGINX_RAW_VERSION=$(echo $NGINX_VERSION | sed 's/-.*//g') \
         dirname=$(echo "${module_repo}" | sed -E 's@^.*/|\..*$@@g'); \
         git clone "${module_repo}"; \
         cd ${dirname}; \
-        if [ -n "${module_tag}" ]; then git checkout "${module_tag}"; fi; \
+        if [ -n "${module_tag}" ]; then \
+            if [[ "${module_tag}" =~ ^(pr-[0-9]+.*)$ ]]; then \
+                pr_numbers="${BASH_REMATCH[1]//pr-/}"; \
+                IFS=';'; \
+                for pr_number in ${pr_numbers}; do \
+                    git fetch origin "pull/${pr_number}/head:pr-${pr_number}"; \
+                    git merge --no-commit pr-${pr_number} master; \
+                done; \
+                IFS=','; \
+            else \
+                git checkout "${module_tag}"; \
+           fi; \
+        fi; \
         cd ..; \
         configure_args="${configure_args} --add-dynamic-module=./${dirname}"; \
     done; unset IFS \
@@ -46,6 +59,8 @@ ca-certificates \
 libcurl4-openssl-dev \
 libyajl-dev \
 lua5.1-dev \
+luajit \
+libluajit-5.1-2 \
 libxml2
 
 RUN apt clean && rm -rf /var/lib/apt/lists/*
