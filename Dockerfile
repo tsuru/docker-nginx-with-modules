@@ -69,4 +69,4 @@ COPY --from=build /modules/* /usr/lib/nginx/modules/
 COPY --from=build /usr/local/modsecurity/ /usr/local/modsecurity/
 
 RUN rm -f /etc/nginx/modules/all.conf && \
-    ls /etc/nginx/modules/*.so | xargs -I{} sh -c 'echo "load_module {};" | tee -a  /etc/nginx/modules/all.conf'
+    ls /etc/nginx/modules/*.so | grep -v debug | xargs -I{} sh -c 'echo "load_module {};" | tee -a  /etc/nginx/modules/all.conf'
