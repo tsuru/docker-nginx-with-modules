@@ -26,3 +26,5 @@ To build a flavor you can use the provided Makefile:
 ```
 make image flavor=tsuru nginx_version=1.14.0
 ```
+
+To install Jq, you could use `./get_jq.sh`
