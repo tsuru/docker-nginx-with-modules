@@ -26,3 +26,5 @@ To build a flavor you can use the provided Makefile:
 ```
 make image flavor=tsuru nginx_version=1.14.0
 ```
+
+To build a flavor, `jq` is required, cf. [download section of jq](https://stedolan.github.io/jq/download/)
