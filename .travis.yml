@@ -21,6 +21,7 @@ env:
   matrix:
     - FLAVOR=tsuru NGINX_VERSION=1.14.0
     - FLAVOR=tsuru NGINX_VERSION=1.15.0
+    - FLAVOR=tsuru NGINX_VERSION=1.16.0
 matrix:
   fast_finish: true
 notifications:

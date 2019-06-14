@@ -1,4 +1,4 @@
-nginx_version ?= 1.14.2
+nginx_version ?= 1.16.0
 cached_layers ?= true
 
 all:
