@@ -1,7 +1,10 @@
 ARG nginx_version=1.16.0
-ARG modsecurity_version=v3.0.3
 
 FROM nginx:${nginx_version} AS build
+
+ARG modsecurity_version=v3.0.3
+ARG owasp_modsecurity_crs_version=v3.1.0
+
 SHELL ["/bin/bash", "-c"]
 
 RUN apt-get update \
@@ -16,6 +19,13 @@ RUN git clone https://github.com/SpiderLabs/ModSecurity.git && cd ModSecurity &&
     && git submodule init && git submodule update && ./build.sh && ./configure && make && make install
 
 RUN strip /usr/local/modsecurity/bin/* /usr/local/modsecurity/lib/*.a /usr/local/modsecurity/lib/*.so*
+
+RUN nginx_modsecurity_conf_dir="/etc/nginx/conf.d/modsecurity" \
+    && mkdir -p ${nginx_modsecurity_conf_dir} \
+    && cd ${nginx_modsecurity_conf_dir} \
+    && curl -fSL "https://github.com/SpiderLabs/owasp-modsecurity-crs/archive/${owasp_modsecurity_crs_version}.tar.gz" | tar -xvzf - \
+    && mv owasp-modsecurity-crs{-${owasp_modsecurity_crs_version#v},} \
+    && cd -
 
 ARG modules
 
@@ -69,6 +79,7 @@ RUN apt clean && rm -rf /var/lib/apt/lists/*
 
 COPY --from=build /modules/* /usr/lib/nginx/modules/
 COPY --from=build /usr/local/modsecurity/ /usr/local/modsecurity/
+COPY --from=build /etc/nginx/conf.d/modsecurity /etc/nginx/conf.d/modsecurity
 
 RUN rm -f /etc/nginx/modules/all.conf && \
     ls /etc/nginx/modules/*.so | grep -v debug | xargs -I{} sh -c 'echo "load_module {};" | tee -a  /etc/nginx/modules/all.conf'
