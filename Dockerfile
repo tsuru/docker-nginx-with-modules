@@ -1,7 +1,7 @@
-ARG nginx_version=1.14.0
+ARG nginx_version=1.16.0
 ARG modsecurity_version=v3.0.3
 
-FROM nginx:${nginx_version} as build
+FROM nginx:${nginx_version} AS build
 SHELL ["/bin/bash", "-c"]
 
 RUN apt-get update \
@@ -14,6 +14,7 @@ RUN apt-get update \
 
 RUN git clone https://github.com/SpiderLabs/ModSecurity.git && cd ModSecurity && git checkout ${modsecurity_version} \
     && git submodule init && git submodule update && ./build.sh && ./configure && make && make install
+
 RUN strip /usr/local/modsecurity/bin/* /usr/local/modsecurity/lib/*.a /usr/local/modsecurity/lib/*.so*
 
 ARG modules
