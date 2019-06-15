@@ -62,24 +62,32 @@ RUN export NGINX_RAW_VERSION=$(echo $NGINX_VERSION | sed 's/-.*//g') \
 
 FROM nginx:${nginx_version}
 
-ENV DEBIAN_FRONTEND noninteractive
-
-RUN apt update && \
-apt-get install --no-install-recommends --no-install-suggests -y \
-curl \
-ca-certificates \
-libcurl4-openssl-dev \
-libyajl-dev \
-lua5.1-dev \
-luajit \
-libluajit-5.1-2 \
-libxml2
-
-RUN apt clean && rm -rf /var/lib/apt/lists/*
-
 COPY --from=build /modules/* /usr/lib/nginx/modules/
 COPY --from=build /usr/local/modsecurity/ /usr/local/modsecurity/
 COPY --from=build /etc/nginx/conf.d/modsecurity /etc/nginx/conf.d/modsecurity
 
-RUN rm -f /etc/nginx/modules/all.conf && \
-    ls /etc/nginx/modules/*.so | grep -v debug | xargs -I{} sh -c 'echo "load_module {};" | tee -a  /etc/nginx/modules/all.conf'
+ENV DEBIAN_FRONTEND noninteractive
+
+RUN apt update \
+    && apt-get install -y \
+      ca-certificates \
+      curl \
+      dnsutils \
+      iputils-ping \
+      libcurl4-openssl-dev \
+      libyajl-dev \
+      libluajit-5.1-2 \
+      libxml2 \
+      lua5.1-dev \
+      luajit \
+      net-tools \
+      procps \
+      tcpdump \
+      vim-tiny \
+    && apt clean \
+    && rm -rf /var/lib/apt/lists/* \
+    && rm -f /etc/nginx/modules/all.conf \
+    && ls /etc/nginx/modules/*.so | grep -v debug \
+      | xargs -I{} sh -c 'echo "load_module {};" | tee -a  /etc/nginx/modules/all.conf'
+
+WORKDIR /etc/nginx
