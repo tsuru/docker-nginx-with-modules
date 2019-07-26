@@ -45,6 +45,39 @@ RUN set -x \
     && mv owasp-modsecurity-crs{-${owasp_modsecurity_crs_version#v},} \
     && cd -
 
+ARG luajit2_version=v2.1-20190626
+RUN set -x \
+    && curl -fsSL "https://github.com/openresty/luajit2/archive/${luajit2_version}.tar.gz" \
+    |  tar -C /usr/local/src -xzvf- \
+    && ln -sf /usr/local/src/luajit2-${luajit2_version#v} /usr/local/src/luajit2 \
+    && cd /usr/local/src/luajit2 \
+    && make \
+    && make install \
+    && ldconfig -v \
+    && ln -sf /usr/local/include/luajit* /usr/local/include/luajit \
+    && luajit -v \
+    && ldconfig -v
+
+ENV LUA_VERSION=5.1 \
+    LUAJIT_LIB=/usr/local/lib \
+    LUAJIT_INC=/usr/local/include/luajit
+
+ARG resty_lrucache_version=v0.09
+RUN set -x \
+    && curl -fsSL "https://github.com/openresty/lua-resty-lrucache/archive/${resty_lrucache_version}.tar.gz" \
+    |  tar -C /usr/local/src -xzvf- \
+    && ln -sf /usr/local/src/lua-resty-lrucache-${resty_lrucache_version#v} /usr/local/src/lua-resty-lrucache \
+    && cd /usr/local/src/lua-resty-lrucache \
+    && make install
+
+ARG resty_core_version=v0.1.17
+RUN set -x \
+    && curl -fsSL "https://github.com/openresty/lua-resty-core/archive/${resty_core_version}.tar.gz" \
+    |  tar -C /usr/local/src -xzvf- \
+    && ln -sf /usr/local/src/lua-resty-core-${resty_core_version#v} /usr/local/src/lua-resty-core \
+    && cd /usr/local/src/lua-resty-core \
+    && make install
+
 RUN set -x \
     && nginx_version=$(echo ${NGINX_VERSION} | sed 's/-.*//g') \
     && curl -fSL "https://nginx.org/download/nginx-${nginx_version}.tar.gz" \
@@ -104,27 +137,27 @@ COPY --from=build /usr/lib/nginx/modules /usr/lib/nginx/modules
 
 COPY --from=build /etc/nginx/conf.d/modsecurity /etc/nginx/conf.d/modsecurity
 
-ENV DEBIAN_FRONTEND noninteractive
+ENV LUAJIT_LIB=/usr/local/lib \
+    LUAJIT_INC=/usr/local/include/luajit
 
-RUN apt update \
-    && apt-get install -y \
+RUN set -x \
+    && apt-get update \
+    && apt-get install -y --no-install-suggests \
       ca-certificates \
       curl \
       dnsutils \
       iputils-ping \
       libcurl4-openssl-dev \
       libyajl-dev \
-      libluajit-5.1-2 \
       libxml2 \
       lua5.1-dev \
-      luajit \
       net-tools \
       procps \
       tcpdump \
       vim-tiny \
-    && apt clean \
+    && apt-get clean \
     && rm -rf /var/lib/apt/lists/* \
-    && rm -f /etc/nginx/modules/all.conf \
+    && ldconfig -v \
     && ls /etc/nginx/modules/*.so | grep -v debug \
       | xargs -I{} sh -c 'echo "load_module {};" | tee -a  /etc/nginx/modules/all.conf'
 
