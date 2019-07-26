@@ -159,6 +159,15 @@ RUN set -x \
     && rm -rf /var/lib/apt/lists/* \
     && ldconfig -v \
     && ls /etc/nginx/modules/*.so | grep -v debug \
-      | xargs -I{} sh -c 'echo "load_module {};" | tee -a  /etc/nginx/modules/all.conf'
+    |  xargs -I{} sh -c 'echo "load_module {};" | tee -a  /etc/nginx/modules/all.conf' \
+    && sed -i -E 's|listen\s+80|&80|g' /etc/nginx/conf.d/default.conf \
+    && ln -sf /dev/stdout /var/log/modsec_audit.log \
+    && touch /var/run/nginx.pid \
+    && mkdir -p /var/cache/nginx \
+    && chown -R nginx:nginx /etc/nginx /var/log/nginx /var/cache/nginx /var/run/nginx.pid /var/log/modsec_audit.log
+
+EXPOSE 8080 8443
+
+USER nginx
 
 WORKDIR /etc/nginx
