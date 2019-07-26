@@ -39,6 +39,7 @@ RUN export NGINX_RAW_VERSION=$(echo $NGINX_VERSION | sed 's/-.*//g') \
         dirname=$(echo "${module_repo}" | sed -E 's@^.*/|\..*$@@g'); \
         git clone "${module_repo}"; \
         cd ${dirname}; \
+        git fetch --tags; \
         if [ -n "${module_tag}" ]; then \
             if [[ "${module_tag}" =~ ^(pr-[0-9]+.*)$ ]]; then \
                 pr_numbers="${BASH_REMATCH[1]//pr-/}"; \
