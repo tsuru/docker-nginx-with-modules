@@ -1,4 +1,4 @@
-ARG nginx_version=1.16.0
+ARG nginx_version=1.16.1
 FROM nginx:${nginx_version} AS build
 
 SHELL ["/bin/bash", "-c"]
@@ -7,22 +7,7 @@ RUN set -x \
     && apt-get update \
     && apt-get install -y --no-install-suggests \
        libluajit-5.1-dev libpam0g-dev zlib1g-dev libpcre3-dev \
-       libexpat1-dev git curl build-essential libxml2 libxslt1.1 libxslt1-dev autoconf libtool \
-       # required for building and testing the OpenSSL from source
-       perl libtext-template-perl libtest-http-server-simple-perl
-
-ARG openssl_version=1.1.1c
-RUN set -x \
-    && curl -fsSL "https://www.openssl.org/source/openssl-${openssl_version}.tar.gz" \
-    |  tar -C /usr/local/src -xzvf- \
-    && ln -s /usr/local/src/openssl-${openssl_version} /usr/local/src/openssl \
-    && cd /usr/local/src/openssl \
-    && ./config \
-    && make \
-    && make test \
-    && make install \
-    && ldconfig -v \
-    && openssl version -a
+       libexpat1-dev git curl build-essential libxml2 libxslt1.1 libxslt1-dev autoconf libtool libssl-dev
 
 ARG modsecurity_version=v3.0.3
 RUN set -x \
@@ -37,7 +22,7 @@ RUN set -x \
 
 ARG owasp_modsecurity_crs_version=v3.1.0
 RUN set -x \
-    && nginx_modsecurity_conf_dir="/etc/nginx/conf.d/modsecurity" \
+    && nginx_modsecurity_conf_dir="/usr/local/etc/modsecurity" \
     && mkdir -p ${nginx_modsecurity_conf_dir} \
     && cd ${nginx_modsecurity_conf_dir} \
     && curl -fSL "https://github.com/SpiderLabs/owasp-modsecurity-crs/archive/${owasp_modsecurity_crs_version}.tar.gz" \
@@ -78,20 +63,12 @@ RUN set -x \
     && cd /usr/local/src/lua-resty-core \
     && make install
 
+ARG modules
 RUN set -x \
     && nginx_version=$(echo ${NGINX_VERSION} | sed 's/-.*//g') \
     && curl -fSL "https://nginx.org/download/nginx-${nginx_version}.tar.gz" \
     |  tar -C /usr/local/src -xzvf- \
     && ln -s /usr/local/src/nginx-${nginx_version} /usr/local/src/nginx \
-    && cd /usr/local/src/nginx \
-    && configure_args=$(nginx -V 2>&1 | grep 'configure arguments:' | awk -F 'configure arguments: ' '{print $2}') \
-    && eval ./configure ${configure_args} \
-    && make \
-    && make install \
-    && nginx -V 2>&1
-
-ARG modules
-RUN set -x \
     && cd /usr/local/src/nginx \
     && configure_args=$(nginx -V 2>&1 | grep "configure arguments:" | awk -F 'configure arguments:' '{print $2}'); \
     IFS=','; \
@@ -123,19 +100,16 @@ RUN set -x \
     && cp -v objs/*.so /usr/lib/nginx/modules/
 
 RUN set -x \
-    && strip --strip-unneeded /usr/local/bin/*[^c_rehash] /usr/local/lib/*.a /usr/local/lib/*.so* /usr/lib/nginx/modules/*.so
+    && strip --strip-unneeded /usr/local/bin/* /usr/local/lib/*.a /usr/local/lib/*.so* /usr/lib/nginx/modules/*.so
 
 FROM nginx:${nginx_version}
 
 COPY --from=build /usr/local/bin      /usr/local/bin
 COPY --from=build /usr/local/include  /usr/local/include
 COPY --from=build /usr/local/lib      /usr/local/lib
-COPY --from=build /usr/local/ssl      /usr/local/ssl
+COPY --from=build /usr/local/etc      /usr/local/etc
 
-COPY --from=build /usr/sbin/nginx        /usr/sbin/nginx
 COPY --from=build /usr/lib/nginx/modules /usr/lib/nginx/modules
-
-COPY --from=build /etc/nginx/conf.d/modsecurity /etc/nginx/conf.d/modsecurity
 
 ENV LUAJIT_LIB=/usr/local/lib \
     LUAJIT_INC=/usr/local/include/luajit

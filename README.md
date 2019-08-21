@@ -24,7 +24,7 @@ URLs.
 To build a flavor you can use the provided Makefile:
 
 ```
-make image flavor=tsuru nginx_version=1.16.0
+make image flavor=tsuru nginx_version=1.16.1
 ```
 
 To build a flavor, `jq` is required, cf. [download section of jq](https://stedolan.github.io/jq/download/)

@@ -21,7 +21,7 @@ env:
   matrix:
     - FLAVOR=tsuru NGINX_VERSION=latest
     - FLAVOR=tsuru NGINX_VERSION=stable
-    - FLAVOR=tsuru NGINX_VERSION=1.16.0
+    - FLAVOR=tsuru NGINX_VERSION=1.16.1
   allow_failures:
     - env: FLAVOR=tsuru NGINX_VERSION=latest
 matrix:
