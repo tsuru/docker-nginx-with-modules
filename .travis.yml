@@ -19,9 +19,11 @@ env:
   global:
     - secure: c2jbo4LdwlTIT2eKdhWCMV7WREyDoRjRQs3AJkRddb1cyvvkuuDXkIu5elzbesuNyFq8g2YLrBv3hk65eBz0lH7+/ASCPF+F9uHZr9jWv1+oUJRcVueW8L+5se+KsbyAF718s+HiUr8lWNdsuZTFfRutngZfYKMBJbq82Xr4dCSHkyyFTUcNaBvJBSmGO1r4M9vF69uXhhl/IcAmMrOq8bM4rRD0AWM6YQ8DkYNTrnzcmcxc6Ljn7/xlCEBc1azEI9HdU3m+7W6MsLmcS9b3eUhGLzQ4cQ6qvZH5m25ZGEXs0Ae+X2RqRmD5+bsi5YPEDggCmbGsaC23ZwZ3prJeWPGP7/SycxNtSCO1yq+JgbTkNfL4zjxPUEBxpMpSPFEbSblDoKUjE8XzDTzeLsSeGfFxVCRrG05HOgUHW5epV2hJNEcTeGoMabC5IXt3rBDyzxw7pk2KqiR7xV7E5rj4nrlSmjWtKX9deQIpO2N3U53pLSmF8mzXBT0T9GviHnmFqfpV0kWuvvpbDa90Zk4thPL21lDdcPBS1NATYYN20071oRLntS1GsWeeEhjBYCQbrmHDoyBxf5hoxvt75omDsLaha7IVjOt9Gt3Vc46AyVRjgvF/9JazznRb8xRrL1JU4iIUUgH9hVtMleWwrgsT7hUE0Pom0qAgOEwdgKqmYBo=
   matrix:
-    - FLAVOR=tsuru NGINX_VERSION=1.14.0
-    - FLAVOR=tsuru NGINX_VERSION=1.15.0
-    - FLAVOR=tsuru NGINX_VERSION=1.16.0
+    - FLAVOR=tsuru NGINX_VERSION=latest
+    - FLAVOR=tsuru NGINX_VERSION=stable
+    - FLAVOR=tsuru NGINX_VERSION=1.16.1
+  allow_failures:
+    - env: FLAVOR=tsuru NGINX_VERSION=latest
 matrix:
   fast_finish: true
 notifications:
