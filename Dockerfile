@@ -30,38 +30,19 @@ RUN set -x \
     && mv owasp-modsecurity-crs{-${owasp_modsecurity_crs_version#v},} \
     && cd -
 
-ARG luajit2_version=v2.1-20190626
 RUN set -x \
-    && curl -fsSL "https://github.com/openresty/luajit2/archive/${luajit2_version}.tar.gz" \
-    |  tar -C /usr/local/src -xzvf- \
-    && ln -sf /usr/local/src/luajit2-${luajit2_version#v} /usr/local/src/luajit2 \
-    && cd /usr/local/src/luajit2 \
-    && make \
-    && make install \
-    && ldconfig -v \
-    && ln -sf /usr/local/include/luajit* /usr/local/include/luajit \
-    && luajit -v \
-    && ldconfig -v
+    && curl -sS https://openresty.org/package/pubkey.gpg | apt-key add - \
+    && echo 'deb http://openresty.org/package/debian stretch openresty' | tee -a /etc/apt/sources.list.d/openresty.list \
+    && apt-get update \
+    && apt-get install -y --no-install-suggests openresty \
+    && cd /usr/local/openresty \
+    && cp -vr ./luajit/* /usr/local/ \
+    && rm -d /usr/local/share/lua/5.1 \
+    && ln -sf /usr/local/lib/lua/5.1 /usr/local/share/lua/ \
+    && cp -vr ./lualib/* /usr/local/lib/lua/5.1
 
-ENV LUA_VERSION=5.1 \
-    LUAJIT_LIB=/usr/local/lib \
-    LUAJIT_INC=/usr/local/include/luajit
-
-ARG resty_lrucache_version=v0.09
-RUN set -x \
-    && curl -fsSL "https://github.com/openresty/lua-resty-lrucache/archive/${resty_lrucache_version}.tar.gz" \
-    |  tar -C /usr/local/src -xzvf- \
-    && ln -sf /usr/local/src/lua-resty-lrucache-${resty_lrucache_version#v} /usr/local/src/lua-resty-lrucache \
-    && cd /usr/local/src/lua-resty-lrucache \
-    && make install
-
-ARG resty_core_version=v0.1.17
-RUN set -x \
-    && curl -fsSL "https://github.com/openresty/lua-resty-core/archive/${resty_core_version}.tar.gz" \
-    |  tar -C /usr/local/src -xzvf- \
-    && ln -sf /usr/local/src/lua-resty-core-${resty_core_version#v} /usr/local/src/lua-resty-core \
-    && cd /usr/local/src/lua-resty-core \
-    && make install
+ENV LUAJIT_LIB=/usr/local/lib \
+    LUAJIT_INC=/usr/local/include/luajit-2.1
 
 ARG modules
 RUN set -x \
@@ -108,11 +89,11 @@ COPY --from=build /usr/local/bin      /usr/local/bin
 COPY --from=build /usr/local/include  /usr/local/include
 COPY --from=build /usr/local/lib      /usr/local/lib
 COPY --from=build /usr/local/etc      /usr/local/etc
-
+COPY --from=build /usr/local/share    /usr/local/share
 COPY --from=build /usr/lib/nginx/modules /usr/lib/nginx/modules
 
 ENV LUAJIT_LIB=/usr/local/lib \
-    LUAJIT_INC=/usr/local/include/luajit
+    LUAJIT_INC=/usr/local/include/luajit-2.1
 
 RUN set -x \
     && apt-get update \
