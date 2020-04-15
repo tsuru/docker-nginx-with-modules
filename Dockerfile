@@ -109,6 +109,7 @@ RUN set -x \
       net-tools \
       procps \
       tcpdump \
+      rsync \
       vim-tiny \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* \
