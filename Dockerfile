@@ -120,7 +120,8 @@ RUN set -x \
     && ln -sf /dev/stdout /var/log/modsec_audit.log \
     && touch /var/run/nginx.pid \
     && mkdir -p /var/cache/nginx \
-    && chown -R nginx:nginx /etc/nginx /var/log/nginx /var/cache/nginx /var/run/nginx.pid /var/log/modsec_audit.log
+    && mkdir -p /var/cache/cache-heater \
+    && chown -R nginx:nginx /etc/nginx /var/log/nginx /var/cache/nginx /var/run/nginx.pid /var/log/modsec_audit.log /var/cache/cache-heater
 
 EXPOSE 8080 8443
 
