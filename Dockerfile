@@ -7,7 +7,8 @@ RUN set -x \
     && apt-get update \
     && apt-get install -y --no-install-suggests \
        libluajit-5.1-dev libpam0g-dev zlib1g-dev libpcre3-dev \
-       libexpat1-dev git curl build-essential libxml2 libxslt1.1 libxslt1-dev autoconf libtool libssl-dev
+       libexpat1-dev git curl build-essential libxml2 libxslt1.1 libxslt1-dev autoconf libtool libssl-dev \
+       unzip
 
 ARG modsecurity_version=v3.0.3
 RUN set -x \
@@ -80,8 +81,21 @@ RUN set -x \
     && make modules \
     && cp -v objs/*.so /usr/lib/nginx/modules/
 
+ARG luarocks_version=3.3.1
 RUN set -x \
-    && strip --strip-unneeded /usr/local/bin/* /usr/local/lib/*.a /usr/local/lib/*.so* /usr/lib/nginx/modules/*.so
+    && curl -fSL "https://luarocks.org/releases/luarocks-${luarocks_version}.tar.gz" \
+    |  tar -C /usr/local/src -xzvf- \
+    && ln -s /usr/local/src/luarocks-${luarocks_version} /usr/local/src/luarocks \
+    && cd /usr/local/src/luarocks \
+    && ./configure && make && make install
+
+ARG lua_modules
+RUN set -x \
+    && IFS=","; \
+      for lua_module in ${lua_modules}; do \
+        unset IFS; \
+        luarocks install ${lua_module}; \
+      done
 
 FROM nginx:${nginx_version}
 
@@ -110,6 +124,7 @@ RUN set -x \
       procps \
       tcpdump \
       rsync \
+      unzip \
       vim-tiny \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* \
