@@ -1,0 +1,57 @@
+name: ci
+on: [push, pull_request]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    continue-on-error: ${{ matrix.experimental }}
+    strategy:
+      fail-fast: true
+      matrix:
+        nginx: [stable, "1.16.1"]
+        flavor: [tsuru]
+        experimental: [false]
+        include:
+        - nginx: latest
+          flavor: tsuru
+          experimental: true
+    steps:
+    - uses: actions/checkout@v2
+    - uses: docker/setup-buildx-action@v1
+    - uses: actions/cache@v2
+      with:
+        path: /tmp/.buildx-cache
+        key: ${{ runner.os }}-buildx-${{ github.sha }}
+        restore-keys: |
+          ${{ runner.os }}-buildx-
+    - uses: docker/login-action@v1
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_PASSWORD }}
+    - run: |
+        echo MODULES=$(jq -er '.flavors[] | select(.name == "${{ matrix.flavor }}") | .modules | join(",")' flavors.json) >> $GITHUB_ENV
+        echo LUA_MODULES=$(jq -er '.flavors[] | select(.name == "${{ matrix.flavor }}") | [ .lua_modules[]? ] | join(",")' flavors.json) >> $GITHUB_ENV
+    - uses: docker/build-push-action@v2
+      with:
+        load: true
+        tags: tsuru/nginx-pre-labels-${{ matrix.flavor }}:${{ matrix.nginx }}
+        cache-from: type=local,src=/tmp/.buildx-cache
+        cache-to: type=local,dest=/tmp/.buildx-cache
+        build-args: |
+          nginx_version=${{ matrix.nginx }}
+          modules=${{ env.MODULES }}
+          lua_modules=${{ env.LUA_MODULES }}
+    - run: make test flavor=${{ matrix.flavor }} nginx_version=${{ matrix.nginx }}
+    - run: echo PUSH_TAG=tsuru/nginx-${{ matrix.flavor }}:${{ matrix.nginx }}-${GITHUB_REF##*/} >> $GITHUB_ENV
+    - run: echo MODULE_NAMES=$(docker run --rm tsuru/nginx-pre-labels-${{ matrix.flavor }}:${{ matrix.nginx }} sh -c 'ls /etc/nginx/modules/*.so | grep -v debug | xargs -I{} basename {} .so | paste -sd "," -') >> $GITHUB_ENV
+    - uses: docker/build-push-action@v2
+      if: github.event_name != 'pull_request'
+      with:
+        push: true
+        tags: ${{ env.PUSH_TAG }}
+        cache-from: type=local,src=/tmp/.buildx-cache
+        cache-to: type=local,dest=/tmp/.buildx-cache
+        labels: io.tsuru.nginx-modules=${{ env.MODULE_NAMES }}
+        build-args: |
+          nginx_version=${{ matrix.nginx }}
+          modules=${{ env.MODULES }}
+          lua_modules=${{ env.LUA_MODULES }}

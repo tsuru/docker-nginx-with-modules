@@ -1,4 +1,4 @@
-nginx_version ?= 1.16.1
+nginx_version ?= stable
 cached_layers ?= true
 
 all:
@@ -12,9 +12,9 @@ image:
 	module_names=$$(docker run --rm tsuru/nginx-pre-labels-$(flavor):$(nginx_version) sh -c 'ls /etc/nginx/modules/*.so | grep -v debug | xargs -I{} basename {} .so | paste -sd "," -') && \
 	echo "FROM tsuru/nginx-pre-labels-$(flavor):$(nginx_version)" | docker build -t tsuru/nginx-$(flavor):$(nginx_version) --label "io.tsuru.nginx-modules=$$module_names" -
 
-test: image
+test:
 	@docker rm -f test-tsuru-nginx-$(flavor)-$(nginx_version) || true
-	@docker create -p 8888:8080 --name test-tsuru-nginx-$(flavor)-$(nginx_version) tsuru/nginx-$(flavor):$(nginx_version) bash -c " \
+	@docker create -p 8888:8080 --name test-tsuru-nginx-$(flavor)-$(nginx_version) tsuru/nginx-pre-labels-$(flavor):$(nginx_version) bash -c " \
 	openssl req -x509 -newkey rsa:4096 -nodes -subj '/CN=localhost' -keyout /etc/nginx/key.pem -out /etc/nginx/cert.pem -days 365; \
 	nginx -c /etc/nginx/nginx-$(flavor).conf"
 	@docker cp $$PWD/test/nginx-$(flavor).conf test-tsuru-nginx-$(flavor)-$(nginx_version):/etc/nginx/
