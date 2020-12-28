@@ -8,7 +8,7 @@ RUN set -x \
     && apt-get install -y --no-install-suggests \
        libluajit-5.1-dev libpam0g-dev zlib1g-dev libpcre3-dev \
        libexpat1-dev git curl build-essential libxml2 libxslt1.1 libxslt1-dev autoconf libtool libssl-dev \
-       unzip
+       unzip libmaxminddb-dev
 
 ARG modsecurity_version=v3.0.3
 RUN set -x \
@@ -126,6 +126,7 @@ RUN set -x \
       rsync \
       unzip \
       vim-tiny \
+      libmaxminddb0 \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* \
     && ldconfig -v \
