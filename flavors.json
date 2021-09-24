@@ -3,20 +3,20 @@
     {
       "name": "tsuru",
       "modules": [
-        "https://github.com/openresty/headers-more-nginx-module.git",
-        "https://github.com/FRiCKLE/ngx_cache_purge.git:pr-45",
-        "https://github.com/simplresty/ngx_devel_kit.git:v0.3.0",
+        "https://github.com/simplresty/ngx_devel_kit.git:v0.3.1",
+        "https://github.com/openresty/lua-nginx-module.git:v0.10.20",
+        "https://github.com/openresty/lua-ssl-nginx-module.git",
         "https://github.com/openresty/echo-nginx-module.git",
+        "https://github.com/openresty/headers-more-nginx-module.git",
+        "https://github.com/tsuru/ngx-location-name-module.git:main",
+        "https://github.com/FRiCKLE/ngx_cache_purge.git:pr-45",
         "https://github.com/wandenberg/nginx-push-stream-module.git",
-        "https://github.com/openresty/lua-nginx-module.git:v0.10.15",
         "https://github.com/masterzen/nginx-upload-progress-module.git",
         "https://github.com/vozlt/nginx-module-vts.git:v0.1.18",
         "https://github.com/aperezdc/ngx-fancyindex.git",
-        "https://github.com/yaoweibin/ngx_http_substitutions_filter_module.git:pr-19",
-        "https://github.com/openresty/lua-ssl-nginx-module.git:pr-11",
+        "https://github.com/yaoweibin/ngx_http_substitutions_filter_module.git",
         "https://github.com/SpiderLabs/ModSecurity-nginx.git:v1.0.0",
         "https://github.com/arut/nginx-dav-ext-module:v3.0.0",
-        "https://github.com/tsuru/ngx-location-name-module.git:main",
         "https://github.com/leev/ngx_http_geoip2_module:3.3"
       ],
       "lua_modules": [

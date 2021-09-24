@@ -1,6 +1,8 @@
 nginx_version ?= stable
 cached_layers ?= true
 
+DOCKER ?= docker
+
 all:
 	flavors=$$(jq -er '.flavors[].name' flavors.json) && \
 	for f in $$flavors; do make flavor=$$f image; done
@@ -8,9 +10,9 @@ all:
 image:
 	modules=$$(jq -er '.flavors[] | select(.name == "$(flavor)") | .modules | join(",")' flavors.json) && \
 	lua_modules=$$(jq -er '.flavors[] | select(.name == "$(flavor)") | [ .lua_modules[]? ] | join(",")' flavors.json) && \
-	docker build -t tsuru/nginx-pre-labels-$(flavor):$(nginx_version) $$(if [ "$(cached_layers)" = "false" ]; then echo "--no-cache"; fi) --build-arg nginx_version=$(nginx_version) --build-arg modules="$$modules" --build-arg lua_modules="$$lua_modules" .
-	module_names=$$(docker run --rm tsuru/nginx-pre-labels-$(flavor):$(nginx_version) sh -c 'ls /etc/nginx/modules/*.so | grep -v debug | xargs -I{} basename {} .so | paste -sd "," -') && \
-	echo "FROM tsuru/nginx-pre-labels-$(flavor):$(nginx_version)" | docker build -t tsuru/nginx-$(flavor):$(nginx_version) --label "io.tsuru.nginx-modules=$$module_names" -
+	$(DOCKER) build -t tsuru/nginx-pre-labels-$(flavor):$(nginx_version) $$(if [ "$(cached_layers)" = "false" ]; then echo "--no-cache"; fi) --build-arg nginx_version=$(nginx_version) --build-arg modules="$$modules" --build-arg lua_modules="$$lua_modules" .
+	module_names=$$($(DOCKER) run --rm tsuru/nginx-pre-labels-$(flavor):$(nginx_version) sh -c 'ls /etc/nginx/modules/*.so | grep -v debug | xargs -I{} basename {} .so | paste -sd "," -') && \
+	echo "FROM tsuru/nginx-pre-labels-$(flavor):$(nginx_version)" | $(DOCKER) build -t tsuru/nginx-$(flavor):$(nginx_version) --label "io.tsuru.nginx-modules=$$module_names" -
 
 test:
 	@docker rm -f test-tsuru-nginx-$(flavor)-$(nginx_version) || true
