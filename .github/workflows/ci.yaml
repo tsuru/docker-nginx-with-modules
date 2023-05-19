@@ -35,9 +35,7 @@ jobs:
     - uses: docker/build-push-action@v4
       with:
         load: true
-        tags:
-        - tsuru/nginx-${{ matrix.flavor }}:${{ matrix.nginx }}
-        - ${{ env.PUSH_TAG }}
+        tags: tsuru/nginx-${{ matrix.flavor }}:${{ matrix.nginx }},${{ env.PUSH_TAG }}
         cache-from: type=local,src=/tmp/.buildx-cache
         cache-to: type=local,dest=/tmp/.buildx-cache
         build-args: |
