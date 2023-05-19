@@ -7,10 +7,10 @@ RUN set -x \
     && apt-get update \
     && apt-get install -y --no-install-suggests \
        libluajit-5.1-dev libpam0g-dev zlib1g-dev libpcre3-dev \
-       libexpat1-dev git curl build-essential libxml2 libxslt1.1 libxslt1-dev autoconf libtool libssl-dev \
+       libexpat1-dev git curl build-essential lsb-release libxml2 libxslt1.1 libxslt1-dev autoconf libtool libssl-dev \
        unzip libmaxminddb-dev
 
-ARG modsecurity_version=v3.0.3
+ARG modsecurity_version=v3.0.9
 RUN set -x \
     && git clone --depth 1 -b ${modsecurity_version} https://github.com/SpiderLabs/ModSecurity.git /usr/local/src/modsecurity \
     && cd /usr/local/src/modsecurity \
@@ -21,7 +21,7 @@ RUN set -x \
     && make \
     && make install
 
-ARG owasp_modsecurity_crs_version=v3.1.0
+ARG owasp_modsecurity_crs_version=v3.2.0
 RUN set -x \
     && nginx_modsecurity_conf_dir="/usr/local/etc/modsecurity" \
     && mkdir -p ${nginx_modsecurity_conf_dir} \
@@ -31,10 +31,10 @@ RUN set -x \
     && mv owasp-modsecurity-crs{-${owasp_modsecurity_crs_version#v},} \
     && cd -
 
-ARG openresty_package_version=1.19.9.1-1~buster1
+ARG openresty_package_version=1.21.4.1-1~bullseye1
 RUN set -x \
-    && curl -sS https://openresty.org/package/pubkey.gpg | apt-key add - \
-    && echo 'deb https://openresty.org/package/debian buster openresty' | tee -a /etc/apt/sources.list.d/openresty.list \
+    && curl -fsSL https://openresty.org/package/pubkey.gpg | apt-key add - \
+    && echo "deb https://openresty.org/package/$(uname -m | grep -qE 'aarch64|arm64' && echo -n 'arm64/')debian $(lsb_release -sc) openresty" | tee -a /etc/apt/sources.list.d/openresty.list \
     && apt-get update \
     && apt-get install -y --no-install-suggests openresty=${openresty_package_version} \
     && cd /usr/local/openresty \
@@ -92,6 +92,7 @@ RUN set -x \
 
 ARG lua_modules
 RUN set -x \
+    && ln -s /usr/include/$(uname -m)-linux-gnu /usr/include/linux-gnu \
     && IFS=","; \
       for lua_module in ${lua_modules}; do \
         unset IFS; \
@@ -137,8 +138,7 @@ RUN set -x \
     && ln -sf /dev/stdout /var/log/modsec_audit.log \
     && touch /var/run/nginx.pid \
     && mkdir -p /var/cache/nginx \
-    && mkdir -p /var/cache/cache-heater \
-    && chown -R nginx:nginx /etc/nginx /var/log/nginx /var/cache/nginx /var/run/nginx.pid /var/log/modsec_audit.log /var/cache/cache-heater
+    && chown -R nginx:nginx /etc/nginx /var/log/nginx /var/cache/nginx /var/run/nginx.pid /var/log/modsec_audit.log
 
 EXPOSE 8080 8443
 
