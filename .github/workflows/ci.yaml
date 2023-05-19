@@ -55,7 +55,7 @@ jobs:
         tags: ${{ env.PUSH_TAG }}
         cache-from: type=local,src=/tmp/.buildx-cache
         cache-to: type=local,dest=/tmp/.buildx-cache
-        platforms: linux/amd64,linux/arm64,linux/arm/v7
+        platforms: linux/amd64,linux/arm64
         build-args: |
           nginx_version=${{ matrix.nginx }}
           modules=${{ env.MODULES }}
