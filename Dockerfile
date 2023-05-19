@@ -10,27 +10,6 @@ RUN set -x \
        libexpat1-dev git curl build-essential lsb-release libxml2 libxslt1.1 libxslt1-dev autoconf libtool libssl-dev \
        unzip libmaxminddb-dev
 
-ARG modsecurity_version=v3.0.9
-RUN set -x \
-    && git clone --depth 1 -b ${modsecurity_version} https://github.com/SpiderLabs/ModSecurity.git /usr/local/src/modsecurity \
-    && cd /usr/local/src/modsecurity \
-    && git submodule init \
-    && git submodule update \
-    && ./build.sh \
-    && ./configure --prefix=/usr/local \
-    && make \
-    && make install
-
-ARG owasp_modsecurity_crs_version=v3.2.0
-RUN set -x \
-    && nginx_modsecurity_conf_dir="/usr/local/etc/modsecurity" \
-    && mkdir -p ${nginx_modsecurity_conf_dir} \
-    && cd ${nginx_modsecurity_conf_dir} \
-    && curl -fSL "https://github.com/SpiderLabs/owasp-modsecurity-crs/archive/${owasp_modsecurity_crs_version}.tar.gz" \
-    |  tar -xvzf - \
-    && mv owasp-modsecurity-crs{-${owasp_modsecurity_crs_version#v},} \
-    && cd -
-
 ARG openresty_package_version=1.21.4.1-1~bullseye1
 RUN set -x \
     && curl -fsSL https://openresty.org/package/pubkey.gpg | apt-key add - \
@@ -135,10 +114,9 @@ RUN set -x \
     && ls /etc/nginx/modules/*.so | grep -v debug \
     |  xargs -I{} sh -c 'echo "load_module {};" | tee -a  /etc/nginx/modules/all.conf' \
     && sed -i -E 's|listen\s+80|&80|g' /etc/nginx/conf.d/default.conf \
-    && ln -sf /dev/stdout /var/log/modsec_audit.log \
     && touch /var/run/nginx.pid \
     && mkdir -p /var/cache/nginx \
-    && chown -R nginx:nginx /etc/nginx /var/log/nginx /var/cache/nginx /var/run/nginx.pid /var/log/modsec_audit.log
+    && chown -R nginx:nginx /etc/nginx /var/log/nginx /var/cache/nginx /var/run/nginx.pid
 
 EXPOSE 8080 8443
 

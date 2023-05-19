@@ -13,7 +13,6 @@
         "https://github.com/wandenberg/nginx-push-stream-module.git",
         "https://github.com/vozlt/nginx-module-vts.git:v0.2.1",
         "https://github.com/yaoweibin/ngx_http_substitutions_filter_module.git",
-        "https://github.com/SpiderLabs/ModSecurity-nginx.git:v1.0.3",
         "https://github.com/leev/ngx_http_geoip2_module:3.4",
         "https://github.com/wandenberg/nginx-sorted-querystring-module.git"
       ],

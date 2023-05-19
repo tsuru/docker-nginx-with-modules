@@ -36,14 +36,7 @@ test: check-required-vars
 	nginx -c /etc/nginx/nginx-$(flavor).conf" \
 
 	$(DOCKER) cp ./test/nginx-$(flavor).conf test-tsuru-nginx-$(flavor)-$(nginx_version):/etc/nginx/
-
-	@MS_RULES_DIR=$$(mktemp -d); \
-		curl -fsSL https://raw.githubusercontent.com/SpiderLabs/ModSecurity/v3/master/modsecurity.conf-recommended -o $$MS_RULES_DIR/modsecurity_rules.conf; \
-		curl -fsSL https://raw.githubusercontent.com/SpiderLabs/ModSecurity/v3/master/unicode.mapping -o $$MS_RULES_DIR/unicode.mapping; \
-		$(DOCKER) cp $$PWD/test/GeoIP2-Country-Test.mmdb test-tsuru-nginx-$(flavor)-$(nginx_version):/etc/nginx; \
-		$(DOCKER) cp $$MS_RULES_DIR/modsecurity_rules.conf test-tsuru-nginx-$(flavor)-$(nginx_version):/etc/nginx; \
-		$(DOCKER) cp $$MS_RULES_DIR/unicode.mapping test-tsuru-nginx-$(flavor)-$(nginx_version):/etc/nginx; \
-		rm -r $$MS_RULES_DIR
+	$(DOCKER) cp $$PWD/test/GeoIP2-Country-Test.mmdb test-tsuru-nginx-$(flavor)-$(nginx_version):/etc/nginx; \
 
 	$(DOCKER) start test-tsuru-nginx-$(flavor)-$(nginx_version) && sleep 3
 
