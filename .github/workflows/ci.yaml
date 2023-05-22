@@ -48,7 +48,7 @@ jobs:
       if: github.event_name != 'pull_request'
       with:
         push: true
-        tags: ${{ env.PUSH_TAG }}
+        tags: tsuru/nginx-${{ matrix.flavor }}:${{ matrix.nginx }},${{ env.PUSH_TAG }}
         cache-from: type=local,src=/tmp/.buildx-cache
         cache-to: type=local,dest=/tmp/.buildx-cache
         platforms: linux/amd64,linux/arm64
