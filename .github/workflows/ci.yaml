@@ -12,7 +12,7 @@ jobs:
         flavor:
         - tsuru
         openresty_package_version:
-        - openresty_1.25.3.1-2~bookworm1
+        - 1.25.3.1-2~bookworm1
         experimental:
         - false
 
