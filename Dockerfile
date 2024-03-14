@@ -6,7 +6,7 @@ SHELL ["/bin/bash", "-c"]
 RUN set -x \
     && apt-get update \
     && apt-get install -y --no-install-suggests \
-       libluajit-5.1-dev libpam0g-dev zlib1g-dev libpcre3-dev \
+       libluajit-5.1-dev libpam0g-dev zlib1g-dev libpcre3-dev libpcre2-dev \
        libexpat1-dev git curl build-essential lsb-release libxml2 libxslt1.1 libxslt1-dev autoconf libtool libssl-dev \
        unzip libmaxminddb-dev
 
