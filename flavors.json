@@ -4,10 +4,10 @@
       "name": "tsuru",
       "modules": [
         "https://github.com/simplresty/ngx_devel_kit.git:v0.3.1",
-        "https://github.com/openresty/lua-nginx-module.git:v0.10.21",
+        "https://github.com/openresty/lua-nginx-module.git:v0.10.26",
         "https://github.com/openresty/lua-ssl-nginx-module.git",
         "https://github.com/openresty/echo-nginx-module.git",
-        "https://github.com/openresty/headers-more-nginx-module.git:nginx-1.25.3",
+        "https://github.com/openresty/headers-more-nginx-module.git",
         "https://github.com/tsuru/ngx-location-name-module.git:main",
         "https://github.com/FRiCKLE/ngx_cache_purge.git:pr-45",
         "https://github.com/wandenberg/nginx-push-stream-module.git",
