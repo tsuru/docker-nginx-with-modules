@@ -13,6 +13,10 @@ jobs:
         - tsuru
         experimental:
         - false
+        include:
+        - nginx: "1.22.1"
+          flavor: tsuru
+          experimental: true
 
     steps:
     - uses: actions/checkout@v3
