@@ -8,11 +8,11 @@ jobs:
       fail-fast: true
       matrix:
         nginx:
-        - "1.25.4"
+        - "1.26.2"
         flavor:
         - tsuru
         openresty_package_version:
-        - 1.25.3.1-2~bookworm1
+        - 1.27.1.1-1~bookworm1
         experimental:
         - false
 

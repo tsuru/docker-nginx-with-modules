@@ -1,7 +1,7 @@
 nginx_version ?= stable
 
 DOCKER ?= docker
-DOCKER_BUILD_OPTS ?=
+DOCKER_BUILD_OPTS ?= --platform=linux/amd64
 
 .PHONY: all
 all:
