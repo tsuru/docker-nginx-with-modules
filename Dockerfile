@@ -6,11 +6,11 @@ SHELL ["/bin/bash", "-c"]
 RUN set -x \
     && apt-get update \
     && apt-get install -y --no-install-suggests \
-       libluajit-5.1-dev libpam0g-dev zlib1g-dev libpcre3-dev \
+       libluajit-5.1-dev libpam0g-dev zlib1g-dev libpcre3-dev libpcre2-dev \
        libexpat1-dev git curl build-essential lsb-release libxml2 libxslt1.1 libxslt1-dev autoconf libtool libssl-dev \
        unzip libmaxminddb-dev
 
-ARG openresty_package_version=1.21.4.1-1~bullseye1
+ARG openresty_package_version=1.27.1.1-1~bookworm1
 RUN set -x \
     && curl -fsSL https://openresty.org/package/pubkey.gpg | apt-key add - \
     && echo "deb https://openresty.org/package/$(uname -m | grep -qE 'aarch64|arm64' && echo -n 'arm64/')debian $(lsb_release -sc) openresty" | tee -a /etc/apt/sources.list.d/openresty.list \

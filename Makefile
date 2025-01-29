@@ -1,7 +1,7 @@
 nginx_version ?= stable
 
 DOCKER ?= docker
-DOCKER_BUILD_OPTS ?=
+DOCKER_BUILD_OPTS ?= --platform=linux/amd64
 
 .PHONY: all
 all:
@@ -24,6 +24,7 @@ image: check-required-vars
 	lua_modules=$$(jq -er '.flavors[] | select(.name == "$(flavor)") | [ .lua_modules[]? ] | join(",")' flavors.json) && \
 	$(DOCKER) build $(DOCKER_BUILD_OPTS) \
 		--build-arg nginx_version=$(nginx_version) \
+		--build-arg openresty_package_version=${openresty_package_version} \
 		--build-arg modules="$$modules" \
 		--build-arg lua_modules="$$lua_modules" \
 		-t tsuru/nginx-$(flavor):$(nginx_version) .
