@@ -26,7 +26,7 @@ test_lua_content() {
 
 test_lua_http_resty() {
     response=$(curl --fail --silent --show-error http://localhost:8080/lua_http_resty)
-    assert "Proxyied response: nginx config check ok" "$response" "/lua_http_resty with expected response"
+    assert '{"body":"nginx config check ok\n","proxied":true}' "$response" "/lua_http_resty with expected response"
 }
 
 echo "Running tests"

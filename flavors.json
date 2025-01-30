@@ -18,7 +18,8 @@
       ],
       "lua_modules": [
         "tsuru-rpaasv2 INOTIFY_INCDIR=/usr/include/linux-gnu",
-        "lua-resty-http 0.17.2-0"
+        "lua-resty-http 0.17.2-0",
+        "lua-cjson 2.1.0.10-1"
       ]
     },
     {
