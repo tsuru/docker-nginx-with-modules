@@ -37,14 +37,10 @@ test: check-required-vars
 	nginx -c /etc/nginx/nginx-$(flavor).conf" \
 
 	$(DOCKER) cp ./test/nginx-$(flavor).conf test-tsuru-nginx-$(flavor)-$(nginx_version):/etc/nginx/
+	$(DOCKER) cp ./test/nginx-$(flavor).bash test-tsuru-nginx-$(flavor)-$(nginx_version):/bin/test-nginx
+
 	$(DOCKER) cp $$PWD/test/GeoIP2-Country-Test.mmdb test-tsuru-nginx-$(flavor)-$(nginx_version):/etc/nginx; \
 
 	$(DOCKER) start test-tsuru-nginx-$(flavor)-$(nginx_version) && sleep 3
 
-	@if [ "$$($(DOCKER) exec test-tsuru-nginx-$(flavor)-$(nginx_version) curl -fsSL http://localhost:8080)" != "nginx config check ok" ]; then \
-		echo 'FAIL' >&2; \
-		$(DOCKER) logs test-tsuru-nginx-$(flavor)-$(nginx_version); \
-		exit 1; \
-	else \
-		echo 'SUCCESS'; \
-	fi
+	$(DOCKER) exec test-tsuru-nginx-$(flavor)-$(nginx_version) sh -c '/bin/test-nginx; exit $$?' || $(DOCKER) logs test-tsuru-nginx-$(flavor)-$(nginx_version)
