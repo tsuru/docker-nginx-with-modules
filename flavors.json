@@ -14,7 +14,8 @@
         "https://github.com/vozlt/nginx-module-vts.git:v0.2.1",
         "https://github.com/yaoweibin/ngx_http_substitutions_filter_module.git",
         "https://github.com/leev/ngx_http_geoip2_module:3.4",
-        "https://github.com/wandenberg/nginx-sorted-querystring-module.git"
+        "https://github.com/wandenberg/nginx-sorted-querystring-module.git",
+        "https://github.com/google/ngx_brotli.git:a71f9312c2deb28875acc7bacfdd5695a111aa53"
       ],
       "lua_modules": [
         "tsuru-rpaasv2 INOTIFY_INCDIR=/usr/include/linux-gnu",

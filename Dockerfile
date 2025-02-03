@@ -8,7 +8,7 @@ RUN set -x \
     && apt-get install -y --no-install-suggests \
        libluajit-5.1-dev libpam0g-dev zlib1g-dev libpcre3-dev libpcre2-dev \
        libexpat1-dev git curl build-essential lsb-release libxml2 libxslt1.1 libxslt1-dev autoconf libtool libssl-dev \
-       unzip libmaxminddb-dev
+       unzip libmaxminddb-dev libbrotli-dev
 
 ARG openresty_package_version=1.27.1.1-1~bookworm1
 RUN set -x \
@@ -38,7 +38,7 @@ RUN set -x \
         module_repo=$(echo $module | sed -E 's@^(((https?|git)://)?[^:]+).*@\1@g'); \
         module_tag=$(echo $module | sed -E 's@^(((https?|git)://)?[^:]+):?([^:/]*)@\4@g'); \
         dirname=$(echo "${module_repo}" | sed -E 's@^.*/|\..*$@@g'); \
-        git clone "${module_repo}"; \
+        git clone --recursive "${module_repo}"; \
         cd ${dirname}; \
         git fetch --tags; \
         if [ -n "${module_tag}" ]; then \
@@ -108,6 +108,7 @@ RUN set -x \
       unzip \
       vim-tiny \
       libmaxminddb0 \
+      libbrotli1 \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* \
     && ldconfig -v \
