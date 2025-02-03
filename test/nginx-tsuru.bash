@@ -29,10 +29,19 @@ test_lua_http_resty() {
     assert '{"body":"nginx config check ok\n","proxied":true}' "$response" "/lua_http_resty with expected response"
 }
 
+test_brotli() {
+    response=$(curl --fail --silent --show-error localhost:8080/brotli)
+    assert '<b>Brotli page</b>' "$response" "/brotli without compression response"
+
+    response=$(curl --fail --silent --show-error -H 'Accept-Encoding: br' localhost:8080/brotli | base64)
+    assert 'BQmAPGI+QnJvdGxpIHBhZ2U8L2I+CgM=' "$response" "/brotli with brotli compression response"
+}
+
 echo "Running tests"
 
 test_nginx_serving_request
 test_lua_content
 test_lua_http_resty
+test_brotli
 
 echo "✅ SUCESS: All tests passed"
