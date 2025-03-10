@@ -38,6 +38,7 @@ test: check-required-vars
 
 	$(DOCKER) cp ./test/nginx-$(flavor).conf test-tsuru-nginx-$(flavor)-$(nginx_version):/etc/nginx/
 	$(DOCKER) cp ./test/nginx-$(flavor).bash test-tsuru-nginx-$(flavor)-$(nginx_version):/bin/test-nginx
+	$(DOCKER) cp ./test/jwks.json test-tsuru-nginx-$(flavor)-$(nginx_version):/etc/nginx/
 
 	$(DOCKER) cp $$PWD/test/GeoIP2-Country-Test.mmdb test-tsuru-nginx-$(flavor)-$(nginx_version):/etc/nginx; \
 

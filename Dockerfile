@@ -8,7 +8,11 @@ RUN set -x \
     && apt-get install -y --no-install-suggests \
        libluajit-5.1-dev libpam0g-dev zlib1g-dev libpcre3-dev libpcre2-dev \
        libexpat1-dev git curl build-essential lsb-release libxml2 libxslt1.1 libxslt1-dev autoconf libtool libssl-dev \
-       unzip libmaxminddb-dev libbrotli-dev
+       unzip libmaxminddb-dev libbrotli-dev cmake pkg-config libjansson-dev
+
+RUN git clone --depth 1 --branch v3.2.0 https://github.com/benmcollins/libjwt.git && \
+       mkdir libjwt/build && \
+       cd libjwt/build && cmake .. && make && make install
 
 ARG openresty_package_version=1.27.1.1-1~bookworm1
 RUN set -x \
@@ -86,6 +90,8 @@ COPY --from=build /usr/local/lib      /usr/local/lib
 COPY --from=build /usr/local/etc      /usr/local/etc
 COPY --from=build /usr/local/share    /usr/local/share
 COPY --from=build /usr/lib/nginx/modules /usr/lib/nginx/modules
+COPY --from=build /usr/local/lib/libjwt.so /usr/local/lib/libjwt.so
+
 
 ENV LUAJIT_LIB=/usr/local/lib \
     LUAJIT_INC=/usr/local/include/luajit-2.1

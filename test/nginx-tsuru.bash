@@ -37,11 +37,23 @@ test_brotli() {
     assert 'BQmAPGI+QnJvdGxpIHBhZ2U8L2I+CgM=' "$response" "/brotli with brotli compression response"
 }
 
+test_libjwt_no_token() {
+    response=$(curl --silent --show-error http://localhost:8080/libjwt)
+    assert '{"message":"token not found"}' "$response" "/libjwt with expected response"
+}
+
+test_libjwt_with_token() {
+    response=$(curl --fail --silent --show-error http://localhost:8080/libjwt -H "Authorization: Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6ImtpZC10c3VydSIsInR5cCI6IkpXVCJ9.eyJhZG1pbiI6dHJ1ZSwiZW1haWwiOiJ0c3VydUB0c3VydS5jb20iLCJleHAiOjIwNTY5OTA3ODEsImlhdCI6MTc0MTYzMDc4MSwibmFtZSI6IlRzdXJ1Iiwic3ViIjoiMTIzNDU2Nzg5MCJ9.osEVAXF1ysV3pwoeOwaPSZK97AzMDMqCD-cyZ4ALHhLatBHszXrPqn6sJxUQdvET_RK0IJyJd15mw-Y1EMZ6WLKBjeV_iWuapQ9-7gh6sQoloZZ0V0ZNfXlbqCGoTXHb-xInFsGEgV6rj4R-5Sl1r96UiYpLdav8GmT3lKrRPILCLvihXFtiuhrUX1rmNhbiKqlIDyAPtG8rjqQzqEDqKkYH2bApjSrgsyevG9do31vbnEljukON-Hc5MgQK7zr4ZF3Ozi4m0JRy3jeIWVzpsWm9dRnTb9mcOfuY5EQP7NhFBXu-H4H-RwvStfZhfN8J9FbOR8jGEEDhUYHsLaRXNQ")
+    assert 'OK' "$response" "/libjwt with expected response"
+}
+
 echo "Running tests"
 
 test_nginx_serving_request
 test_lua_content
 test_lua_http_resty
 test_brotli
+test_libjwt_with_token
+test_libjwt_no_token
 
 echo "✅ SUCESS: All tests passed"
