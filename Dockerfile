@@ -10,10 +10,7 @@ RUN set -x \
     libexpat1-dev git curl build-essential lsb-release libxml2 libxslt1.1 libxslt1-dev autoconf libtool libssl-dev \
     unzip libmaxminddb-dev libbrotli-dev cmake pkg-config libjansson-dev libmsgpack-dev
 
-RUN git clone https://github.com/benmcollins/libjwt.git /home/libjwt && \
-    cd /home/libjwt && \
-    git checkout 8ac4200
-
+RUN git clone --depth 1 --branch v3.2.1 https://github.com/benmcollins/libjwt.git /home/libjwt
 RUN mkdir -p /home/libjwt/build && \
     cd /home/libjwt/build && \
     cmake .. && make && make install
