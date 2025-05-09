@@ -12,7 +12,7 @@
         "https://github.com/tsuru/ngx-http-limit-req-rw-module.git:v0.2.6",
         "https://github.com/FRiCKLE/ngx_cache_purge.git:pr-45",
         "https://github.com/wandenberg/nginx-push-stream-module.git",
-        "https://github.com/vozlt/nginx-module-vts.git:v0.2.3",
+        "https://github.com/vozlt/nginx-module-vts.git:v0.2.4",
         "https://github.com/yaoweibin/ngx_http_substitutions_filter_module.git",
         "https://github.com/leev/ngx_http_geoip2_module:3.4",
         "https://github.com/wandenberg/nginx-sorted-querystring-module.git",
