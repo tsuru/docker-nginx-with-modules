@@ -66,7 +66,7 @@ RUN set -x \
     && make modules \
     && cp -v objs/*.so /usr/lib/nginx/modules/
 
-ARG luarocks_version=3.3.1
+ARG luarocks_version=3.12.2
 RUN set -x \
     && curl -fSL "https://luarocks.org/releases/luarocks-${luarocks_version}.tar.gz" \
     |  tar -C /usr/local/src -xzvf- \
