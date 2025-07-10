@@ -29,11 +29,15 @@ jobs:
     - run: |
         echo MODULES=$(jq -er '.flavors[] | select(.name == "${{ matrix.flavor }}") | .modules | join(",")' flavors.json) >> $GITHUB_ENV
         echo LUA_MODULES=$(jq -er '.flavors[] | select(.name == "${{ matrix.flavor }}") | [ .lua_modules[]? ] | join(",")' flavors.json) >> $GITHUB_ENV
-        echo PUSH_TAG=tsuru/nginx-${{ matrix.flavor }}:${{ matrix.nginx }}-${GITHUB_REF##*/} >> $GITHUB_ENV
+        if [[ "${{ github.ref }}" == "refs/heads/main" ]] || [[ "${{ github.ref }}" == refs/tags/* ]]; then
+          echo DOCKER_TAGS=tsuru/nginx-${{ matrix.flavor }}:${{ matrix.nginx }},tsuru/nginx-${{ matrix.flavor }}:${{ matrix.nginx }}-${GITHUB_REF##*/} >> $GITHUB_ENV
+        else
+          echo DOCKER_TAGS=tsuru/nginx-${{ matrix.flavor }}:${{ matrix.nginx }}-${GITHUB_REF##*/} >> $GITHUB_ENV
+        fi
     - uses: docker/build-push-action@v4
       with:
         load: true
-        tags: tsuru/nginx-${{ matrix.flavor }}:${{ matrix.nginx }},${{ env.PUSH_TAG }}
+        tags: ${{ env.DOCKER_TAGS }}
         cache-from: type=local,src=/tmp/.buildx-cache
         cache-to: type=local,dest=/tmp/.buildx-cache
         build-args: |
@@ -51,7 +55,7 @@ jobs:
       if: github.event_name != 'pull_request'
       with:
         push: true
-        tags: tsuru/nginx-${{ matrix.flavor }}:${{ matrix.nginx }},${{ env.PUSH_TAG }}
+        tags: ${{ env.DOCKER_TAGS }}
         cache-from: type=local,src=/tmp/.buildx-cache
         cache-to: type=local,dest=/tmp/.buildx-cache
         platforms: linux/amd64,linux/arm64
