@@ -23,7 +23,7 @@
         "lua-resty-http 0.17.2-0",
         "lua-resty-balancer 0.04",
         "lua-resty-cookie 0.4.0-1",
-        "lua-resty-libjwt 0.2.0-1"
+        "lua-resty-libjwt 0.3.0-1"
       ]
     },
     {
