@@ -8,7 +8,7 @@ RUN set -x \
   && apt-get install -y --no-install-suggests \
   libluajit-5.1-dev libpam0g-dev zlib1g-dev libpcre2-dev \
   libexpat1-dev git curl build-essential lsb-release libxml2 libxslt1.1 libxslt1-dev autoconf libtool libssl-dev \
-  unzip libmaxminddb-dev libbrotli-dev cmake pkg-config libjansson-dev \
+  unzip libmaxminddb-dev libbrotli-dev cmake pkg-config libjansson-dev gnupg \
   && if [ "${NGINX_VERSION}" = "1.26.3" ]; then apt-get install -y --no-install-suggests libpcre3-dev; fi
 
 RUN git clone --depth 1 --branch cpp-3.1.0 https://github.com/msgpack/msgpack-c.git /home/msgpack
