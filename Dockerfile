@@ -24,8 +24,9 @@ RUN mkdir -p /home/libjwt/build && \
 
 ARG openresty_package_version=1.27.1.1-1~bookworm1
 RUN set -x \
-  && curl -fsSL https://openresty.org/package/pubkey.gpg | apt-key add - \
-  && echo "deb https://openresty.org/package/$(uname -m | grep -qE 'aarch64|arm64' && echo -n 'arm64/')debian $(lsb_release -sc) openresty" | tee -a /etc/apt/sources.list.d/openresty.list \
+  && mkdir -p /etc/apt/keyrings \
+  && curl -fsSL https://openresty.org/package/pubkey.gpg | gpg --dearmor -o /etc/apt/keyrings/openresty.gpg \
+  && echo "deb [signed-by=/etc/apt/keyrings/openresty.gpg] https://openresty.org/package/$(uname -m | grep -qE 'aarch64|arm64' && echo -n 'arm64/')debian $(lsb_release -sc) openresty" | tee /etc/apt/sources.list.d/openresty.list \
   && apt-get update \
   && apt-get install -y --no-install-suggests openresty=${openresty_package_version} \
   && cd /usr/local/openresty \
