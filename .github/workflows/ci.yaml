@@ -9,6 +9,7 @@ jobs:
       matrix:
         nginx:
         - "1.26.3"
+        - "1.28.1"
         flavor:
         - tsuru
         openresty_package_version:
