@@ -44,4 +44,8 @@ test: check-required-vars
 
 	$(DOCKER) start test-tsuru-nginx-$(flavor)-$(nginx_version) && sleep 3
 
-	$(DOCKER) exec test-tsuru-nginx-$(flavor)-$(nginx_version) sh -c '/bin/test-nginx; exit $$?' || $(DOCKER) logs test-tsuru-nginx-$(flavor)-$(nginx_version)
+	$(DOCKER) inspect --format='{{.State.Running}}' test-tsuru-nginx-$(flavor)-$(nginx_version) | grep -q true || \
+		(echo "Container failed to start:" && $(DOCKER) logs test-tsuru-nginx-$(flavor)-$(nginx_version) && exit 1)
+
+	$(DOCKER) exec test-tsuru-nginx-$(flavor)-$(nginx_version) sh -c '/bin/test-nginx; exit $$?' || \
+		($(DOCKER) logs test-tsuru-nginx-$(flavor)-$(nginx_version) && exit 1)
