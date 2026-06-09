@@ -47,6 +47,50 @@ test_libjwt_with_token() {
     assert 'OK' "$response" "/libjwt with expected response"
 }
 
+test_headers_more() {
+    response=$(curl --fail --silent --show-error -I http://localhost:8080/ | grep -i "x-myheader:" | tr -d '\r')
+    assert "X-MyHeader: blah" "$response" "headers-more-nginx-module sets X-MyHeader"
+}
+
+test_vts() {
+    curl --fail --silent --show-error http://localhost:8080/status > /dev/null
+    echo "✅ SUCESS: nginx-module-vts /status returns 200"
+}
+
+test_geoip2() {
+    curl --fail --silent --show-error http://localhost:8080/geoip > /dev/null
+    echo "✅ SUCESS: ngx_http_geoip2_module /geoip returns 200"
+}
+
+test_sorted_querystring() {
+    response=$(curl --fail --silent --show-error "http://localhost:8080/sorted_querystring?z=1&a=2&m=3")
+    assert "a=2&m=3&z=1" "$response" "nginx-sorted-querystring-module sorts query args"
+}
+
+test_subs_filter() {
+    response=$(curl --fail --silent --show-error http://localhost:8080/subs_filter)
+    assert "world nginx" "$response" "ngx_http_substitutions_filter_module substitutes body"
+}
+
+test_https() {
+    curl --fail --silent --show-error --insecure https://localhost:8443/ > /dev/null
+    echo "✅ SUCESS: HTTPS on port 8443 responds"
+}
+
+test_cache_purge() {
+    curl --fail --silent --show-error http://localhost:8080/cached > /dev/null
+    status=$(curl --silent --show-error --output /dev/null --write-out "%{http_code}" http://localhost:8080/purge/cached)
+    assert "200" "$status" "ngx_cache_purge returns 200 for existing cache entry"
+
+    status=$(curl --silent --show-error --output /dev/null --write-out "%{http_code}" http://localhost:8080/purge/cached)
+    assert "412" "$status" "ngx_cache_purge returns 412 when cache entry not found"
+}
+
+test_resty_modules() {
+    response=$(curl --fail --silent --show-error http://localhost:8080/resty_modules_check)
+    assert "ok" "$response" "/resty_modules_check with expected response"
+}
+
 echo "Running tests"
 
 test_nginx_serving_request
@@ -55,5 +99,13 @@ test_lua_http_resty
 test_brotli
 test_libjwt_with_token
 test_libjwt_no_token
+test_resty_modules
+test_headers_more
+test_vts
+test_geoip2
+test_sorted_querystring
+test_subs_filter
+test_https
+test_cache_purge
 
 echo "✅ SUCESS: All tests passed"

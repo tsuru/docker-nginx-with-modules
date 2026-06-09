@@ -92,6 +92,10 @@ RUN set -x \
   luarocks install ${lua_module}; \
   done
 
+RUN test -f /usr/local/lib/lua/5.1/resty/http.lua \
+  && test -f /usr/local/share/lua/5.1/resty/chash.lua \
+  && test -f /usr/local/share/lua/5.1/resty/roundrobin.lua
+
 FROM nginx:${nginx_version}
 
 COPY --from=build /usr/local/bin      /usr/local/bin
