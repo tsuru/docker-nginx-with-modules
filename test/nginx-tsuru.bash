@@ -47,6 +47,11 @@ test_libjwt_with_token() {
     assert 'OK' "$response" "/libjwt with expected response"
 }
 
+test_resty_modules() {
+    response=$(curl --fail --silent --show-error http://localhost:8080/resty_modules_check)
+    assert "ok" "$response" "/resty_modules_check with expected response"
+}
+
 echo "Running tests"
 
 test_nginx_serving_request
@@ -55,5 +60,6 @@ test_lua_http_resty
 test_brotli
 test_libjwt_with_token
 test_libjwt_no_token
+test_resty_modules
 
 echo "✅ SUCESS: All tests passed"
