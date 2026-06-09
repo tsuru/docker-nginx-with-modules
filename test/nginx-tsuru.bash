@@ -83,7 +83,7 @@ test_cache_purge() {
     assert "200" "$status" "ngx_cache_purge returns 200 for existing cache entry"
 
     status=$(curl --silent --show-error --output /dev/null --write-out "%{http_code}" http://localhost:8080/purge/cached)
-    assert "404" "$status" "ngx_cache_purge returns 404 after cache purged"
+    assert "412" "$status" "ngx_cache_purge returns 412 when cache entry not found"
 }
 
 test_resty_modules() {
