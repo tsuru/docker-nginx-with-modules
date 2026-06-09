@@ -9,10 +9,9 @@ jobs:
       matrix:
         nginx:
         - "1.26.3"
+        - "1.30.2"
         flavor:
         - tsuru
-        openresty_package_version:
-        - 1.27.1.1-1~bookworm1
         experimental:
         - false
 
@@ -42,7 +41,6 @@ jobs:
         cache-to: type=local,dest=/tmp/.buildx-cache
         build-args: |
           nginx_version=${{ matrix.nginx }}
-          openresty_package_version=${{ matrix.openresty_package_version }}
           modules=${{ env.MODULES }}
           lua_modules=${{ env.LUA_MODULES }}
     - run: make test flavor=${{ matrix.flavor }} nginx_version=${{ matrix.nginx }}
