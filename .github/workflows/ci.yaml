@@ -9,10 +9,9 @@ jobs:
       matrix:
         nginx:
         - "1.26.3"
+        - "1.30.2"
         flavor:
         - tsuru
-        openresty_package_version:
-        - 1.27.1.1-1~bookworm1
         experimental:
         - false
 
@@ -29,6 +28,7 @@ jobs:
     - run: |
         echo MODULES=$(jq -er '.flavors[] | select(.name == "${{ matrix.flavor }}") | .modules | join(",")' flavors.json) >> $GITHUB_ENV
         echo LUA_MODULES=$(jq -er '.flavors[] | select(.name == "${{ matrix.flavor }}") | [ .lua_modules[]? ] | join(",")' flavors.json) >> $GITHUB_ENV
+        echo LOCAL_TAG=tsuru/nginx-${{ matrix.flavor }}:${{ matrix.nginx }} >> $GITHUB_ENV
         if [[ "${{ github.ref }}" == "refs/heads/main" ]] || [[ "${{ github.ref }}" == refs/tags/* ]]; then
           echo DOCKER_TAGS=tsuru/nginx-${{ matrix.flavor }}:${{ matrix.nginx }},tsuru/nginx-${{ matrix.flavor }}:${{ matrix.nginx }}-${GITHUB_REF##*/} >> $GITHUB_ENV
         else
@@ -37,12 +37,11 @@ jobs:
     - uses: docker/build-push-action@v4
       with:
         load: true
-        tags: ${{ env.DOCKER_TAGS }}
+        tags: ${{ env.LOCAL_TAG }}
         cache-from: type=local,src=/tmp/.buildx-cache
         cache-to: type=local,dest=/tmp/.buildx-cache
         build-args: |
           nginx_version=${{ matrix.nginx }}
-          openresty_package_version=${{ matrix.openresty_package_version }}
           modules=${{ env.MODULES }}
           lua_modules=${{ env.LUA_MODULES }}
     - run: make test flavor=${{ matrix.flavor }} nginx_version=${{ matrix.nginx }}
