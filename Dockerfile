@@ -25,7 +25,12 @@ RUN mkdir -p /home/libjwt/build && \
   cd /home/libjwt/build && \
   cmake .. && make && make install
 
-COPY --from=openresty /usr/local/openresty/luajit/ /usr/local/
+RUN git clone --depth 1 https://github.com/openresty/luajit2.git /home/luajit2 \
+  && cd /home/luajit2 \
+  && make -j$(nproc) PREFIX=/usr/local \
+  && make install PREFIX=/usr/local \
+  && rm -rf /home/luajit2
+
 COPY --from=openresty /usr/local/openresty/lualib/ /usr/local/lib/lua/5.1/
 RUN mkdir -p /usr/local/share/lua \
   && rm -rf /usr/local/share/lua/5.1 \
