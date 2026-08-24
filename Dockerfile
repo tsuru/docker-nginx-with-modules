@@ -1,4 +1,4 @@
-ARG nginx_version=stable
+ARG nginx_version=stable-bookworm
 
 FROM openresty/openresty:1.31.1.1-restyrepo AS openresty
 
@@ -104,7 +104,6 @@ COPY --from=build /usr/local/lib      /usr/local/lib
 COPY --from=build /usr/local/etc      /usr/local/etc
 COPY --from=build /usr/local/share    /usr/local/share
 COPY --from=build /usr/lib/nginx/modules /usr/lib/nginx/modules
-COPY --from=build /usr/local/lib/libjwt.so /usr/local/lib/libjwt.so
 
 
 ENV LUAJIT_LIB=/usr/local/lib \
