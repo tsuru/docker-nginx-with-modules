@@ -1,4 +1,4 @@
-ARG nginx_version=stable
+ARG nginx_version=stable-bookworm
 
 FROM openresty/openresty:1.31.1.1-restyrepo AS openresty
 
@@ -12,7 +12,9 @@ RUN set -x \
   libpam0g-dev zlib1g-dev libpcre2-dev \
   libexpat1-dev git curl build-essential libxml2 libxslt1.1 libxslt1-dev autoconf libtool libssl-dev \
   unzip libmaxminddb-dev libbrotli-dev cmake pkg-config libjansson-dev \
-  && if [ "${NGINX_VERSION}" = "1.26.3" ]; then apt-get install -y --no-install-suggests libpcre3-dev; fi
+  && if [ "${NGINX_VERSION}" = "1.26.3" ]; then apt-get install -y --no-install-suggests libpcre3-dev; fi \
+  && apt-get clean \
+  && rm -rf /var/lib/apt/lists/*
 
 RUN git clone --depth 1 --branch cpp-3.1.0 https://github.com/msgpack/msgpack-c.git /home/msgpack
 RUN cd /home/msgpack \
@@ -104,7 +106,6 @@ COPY --from=build /usr/local/lib      /usr/local/lib
 COPY --from=build /usr/local/etc      /usr/local/etc
 COPY --from=build /usr/local/share    /usr/local/share
 COPY --from=build /usr/lib/nginx/modules /usr/lib/nginx/modules
-COPY --from=build /usr/local/lib/libjwt.so /usr/local/lib/libjwt.so
 
 
 ENV LUAJIT_LIB=/usr/local/lib \

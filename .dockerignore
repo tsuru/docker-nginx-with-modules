@@ -1,0 +1,5 @@
+# The Dockerfile only consumes artifacts from its build stage; it does not use
+# files from the local build context.
+**
+!Dockerfile
+!.dockerignore

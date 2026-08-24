@@ -1,4 +1,4 @@
-nginx_version ?= stable
+nginx_version ?= stable-bookworm
 
 DOCKER ?= docker
 DOCKER_BUILD_OPTS ?= --platform=linux/amd64
